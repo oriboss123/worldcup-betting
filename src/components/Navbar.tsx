@@ -4,8 +4,10 @@ import Link from 'next/link'
 import { useUser } from '@/contexts/UserContext'
 import { useNav } from '@/contexts/NavContext'
 import { useState } from 'react'
-import { Trophy, Users, Calendar, BarChart3, LogOut, Menu, X, User } from 'lucide-react'
+import { Trophy, Users, Calendar, BarChart3, LogOut, Menu, X, User, Settings } from 'lucide-react'
 import { usePathname } from 'next/navigation'
+
+const ADMIN_PHONE = '0549774566'
 
 export default function Navbar() {
   const { user, logout } = useUser()
@@ -18,6 +20,7 @@ export default function Navbar() {
     setMobileMenuOpen(val)
   }
   const displayName = user?.nickname || user?.name
+  const isAdmin = user?.phone === ADMIN_PHONE
 
   const links = [
     { href: '/matches', icon: <Calendar size={15} />, label: 'משחקים' },
@@ -71,6 +74,16 @@ export default function Navbar() {
               })}
             </div>
 
+            {isAdmin && (
+              <Link href="/admin"
+                className={`hidden md:flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition ${
+                  pathname === '/admin' ? 'text-orange-400' : 'text-orange-400/60 hover:text-orange-400 hover:bg-orange-500/10'
+                }`}>
+                <Settings size={15} />
+                ניהול
+              </Link>
+            )}
+
             <div className="hidden md:flex items-center gap-3">
               <Link href="/profile"
                 className="flex items-center gap-2 text-sm text-gray-300 hover:text-white transition px-3 py-1.5 rounded-xl hover:bg-white/5">
@@ -114,6 +127,12 @@ export default function Navbar() {
             className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-gray-300 hover:text-white hover:bg-white/5 text-sm transition">
             <User size={15} />הפרופיל שלי
           </Link>
+          {isAdmin && (
+            <Link href="/admin" onClick={() => toggleMenu(false)}
+              className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-orange-400/80 hover:text-orange-400 hover:bg-orange-500/10 text-sm transition">
+              <Settings size={15} />ניהול
+            </Link>
+          )}
           <button onClick={() => { logout(); toggleMenu(false) }}
             className="flex items-center gap-2 px-3 py-2 text-red-400 text-sm text-right">
             <LogOut size={14} />התנתק
