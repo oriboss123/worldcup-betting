@@ -25,8 +25,8 @@ export default function RegisterPage() {
     setLoading(true)
 
     const cleanPhone = phone.replace(/\D/g, '')
-    if (cleanPhone.length < 9) {
-      setError('מספר טלפון לא תקין')
+    if (cleanPhone.length !== 10) {
+      setError('מספר טלפון חייב להיות 10 ספרות')
       setLoading(false)
       return
     }
@@ -68,6 +68,7 @@ export default function RegisterPage() {
         return
       }
 
+      sessionStorage.setItem('wc_show_welcome', '1')
       setUser(data)
       router.push('/matches')
     } else {
@@ -93,6 +94,7 @@ export default function RegisterPage() {
       }
       // existing user without PIN — let them in (legacy)
 
+      sessionStorage.setItem('wc_show_welcome', '1')
       setUser(data)
       router.push('/matches')
     }

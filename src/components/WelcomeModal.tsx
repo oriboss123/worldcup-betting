@@ -17,17 +17,17 @@ const STEPS = [
   {
     icon: '📋',
     title: 'איך מהמרים?',
-    desc: 'לך ל"משחקים", בחר משחק ונחש מי ינצח (+3 נקודות) או את התוצאה המדויקת (+6 נקודות). ניחוש שגוי = נקודות שליליות!',
+    desc: 'לחץ על משחק, בחר "ניחוש מנצח" (+3/-1) או "תוצאה מדויקת" (+6/-3). ההימור נסגר 30 דקות לפני הקיקאוף!',
   },
   {
     icon: '👥',
     title: 'צור קבוצה עם חברים',
-    desc: 'לך ל"קבוצות", צור קבוצה חדשה ושלח לחברים את קוד ההזמנה. הדירוג בקבוצה הוא פרטי.',
+    desc: 'לך ל"קבוצות", צור קבוצה ושלח לחברים את קוד ההזמנה. תתחרו בינכם בדירוג פרטי.',
   },
   {
-    icon: '⏰',
-    title: 'שים לב!',
-    desc: 'ניתן להמר רק עד 30 דקות לפני תחילת המשחק. אחרי זה — ההימורים נסגרים. אל תחכה לרגע האחרון!',
+    icon: '🏆',
+    title: 'מי ינצח?',
+    desc: 'בסוף המונדיאל מי שצבר הכי הרבה נקודות — הוא האלוף! בהצלחה 🔥',
   },
 ]
 
@@ -36,16 +36,16 @@ export default function WelcomeModal() {
   const [step, setStep] = useState(0)
 
   useEffect(() => {
-    const seen = localStorage.getItem('wc2026_welcomed')
-    if (!seen) {
-      setTimeout(() => setShow(true), 600)
+    // Show after every login (flag set by register page)
+    const shouldShow = sessionStorage.getItem('wc_show_welcome')
+    if (shouldShow) {
+      sessionStorage.removeItem('wc_show_welcome')
+      setStep(0)
+      setTimeout(() => setShow(true), 400)
     }
   }, [])
 
-  const close = () => {
-    localStorage.setItem('wc2026_welcomed', '1')
-    setShow(false)
-  }
+  const close = () => setShow(false)
 
   if (!show) return null
 
@@ -53,9 +53,11 @@ export default function WelcomeModal() {
   const isLast = step === STEPS.length - 1
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={close} />
-      <div className="relative bg-[#0f0f1e] border border-[#2a2a3e] rounded-2xl p-7 max-w-sm w-full shadow-2xl shadow-black/60 animate-in fade-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
+      <div className="absolute inset-0 bg-black/75 backdrop-blur-sm" onClick={close} />
+      <div className="relative rounded-2xl p-7 max-w-sm w-full shadow-2xl shadow-black/60"
+        style={{ background: 'linear-gradient(160deg, #0f0f2a, #0a0a1a)', border: '1px solid rgba(34,197,94,0.2)', zIndex: 1 }}>
+
         <button onClick={close} className="absolute top-4 left-4 text-gray-600 hover:text-gray-400 transition">
           <X size={18} />
         </button>
@@ -63,33 +65,30 @@ export default function WelcomeModal() {
         {/* Progress dots */}
         <div className="flex justify-center gap-1.5 mb-6">
           {STEPS.map((_, i) => (
-            <div
-              key={i}
-              className={`h-1.5 rounded-full transition-all duration-300 ${i === step ? 'w-6 bg-green-400' : i < step ? 'w-3 bg-green-700' : 'w-3 bg-[#2a2a3e]'}`}
-            />
+            <div key={i} className={`h-1.5 rounded-full transition-all duration-300 ${
+              i === step ? 'w-6 bg-green-400' : i < step ? 'w-3 bg-green-700' : 'w-3 bg-[#2a2a3e]'
+            }`} />
           ))}
         </div>
 
-        <div className="text-center mb-6">
-          <div className="text-5xl mb-4">{current.icon}</div>
-          <h2 className="text-xl font-bold text-white mb-2">{current.title}</h2>
-          <p className="text-gray-400 text-sm leading-relaxed">{current.desc}</p>
+        <div className="text-center mb-7">
+          <div className="text-6xl mb-4">{current.icon}</div>
+          <h2 className="text-2xl font-black text-white mb-3">{current.title}</h2>
+          <p className="text-gray-300 text-base leading-relaxed">{current.desc}</p>
         </div>
 
         <div className="flex gap-2">
           {step > 0 && (
-            <button
-              onClick={() => setStep(s => s - 1)}
-              className="flex-1 border border-[#2a2a3e] text-gray-400 hover:text-white py-2.5 rounded-xl text-sm transition"
-            >
-              הקודם
+            <button onClick={() => setStep(s => s - 1)}
+              className="flex-1 border border-[#2a2a3e] text-gray-400 hover:text-white py-3 rounded-xl text-sm transition">
+              ← הקודם
             </button>
           )}
           <button
             onClick={isLast ? close : () => setStep(s => s + 1)}
-            className="flex-1 bg-gradient-to-l from-green-500 to-emerald-400 hover:from-green-600 hover:to-emerald-500 text-white font-semibold py-2.5 rounded-xl text-sm transition shadow shadow-green-500/20"
-          >
-            {isLast ? '✅ מוכן, בואו נתחיל!' : 'הבא →'}
+            className="flex-1 text-white font-bold py-3 rounded-xl transition text-base"
+            style={{ background: 'linear-gradient(135deg, #15803d, #22c55e)', boxShadow: '0 4px 20px rgba(34,197,94,0.3)' }}>
+            {isLast ? '✅ בואו נתחיל!' : 'הבא →'}
           </button>
         </div>
       </div>
