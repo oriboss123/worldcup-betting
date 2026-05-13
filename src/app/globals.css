@@ -1,55 +1,54 @@
 @import "tailwindcss";
 
 :root {
-  --background: #060611;
-  --foreground: #f0f0f0;
-  --card: #0d0d1f;
-  --card-border: #1e1e3a;
-  --accent: #22c55e;
-  --accent-hover: #16a34a;
-  --muted: #6b7280;
-  --danger: #ef4444;
-  --warning: #f59e0b;
+  --bg: #04040c;
+  --card: #0a0a1a;
+  --card-border: #1a1a30;
+  --green: #22c55e;
+  --gold: #f59e0b;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-accent: var(--accent);
-  --color-muted: var(--muted);
-  --color-danger: var(--danger);
-  --color-warning: var(--warning);
-}
-
-* { box-sizing: border-box; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  background-color: var(--background);
-  color: var(--foreground);
+  background-color: var(--bg);
+  color: #f0f0f8;
   font-family: 'Segoe UI', 'Arial', sans-serif;
   direction: rtl;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
-/* Top green glow */
+/* Stadium atmosphere background */
 body::before {
   content: '';
   position: fixed;
-  top: -200px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 800px;
-  height: 400px;
-  background: radial-gradient(ellipse, rgba(34,197,94,0.18) 0%, transparent 70%);
+  inset: 0;
+  background:
+    radial-gradient(ellipse 120% 40% at 50% 0%, rgba(34,197,94,0.22) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 30% at 15% 80%, rgba(16,185,129,0.08) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 30% at 85% 80%, rgba(59,130,246,0.06) 0%, transparent 50%),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      transparent 79px,
+      rgba(34,197,94,0.025) 79px,
+      rgba(34,197,94,0.025) 80px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      transparent 79px,
+      rgba(34,197,94,0.025) 79px,
+      rgba(34,197,94,0.025) 80px
+    );
+  background-attachment: fixed;
   pointer-events: none;
   z-index: 0;
 }
 
-/* All content above the pseudo-element */
-#__next, main, nav { position: relative; z-index: 1; }
+body > * { position: relative; z-index: 1; }
 
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--background); }
-::-webkit-scrollbar-thumb { background: #2d2d5f; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #4d4d8f; }
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: #2a2a50; border-radius: 3px; }

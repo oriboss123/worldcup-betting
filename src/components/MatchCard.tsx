@@ -27,108 +27,98 @@ export default function MatchCard({ match, bet, onBet, currentUserId }: Props) {
   const handleSave = async () => {
     if (!bettable) return
     setSaving(true)
-    const winner = betWinner || null
-    const hs = homeScore !== '' ? parseInt(homeScore) : null
-    const as = awayScore !== '' ? parseInt(awayScore) : null
-    await onBet(match.id, winner, hs, as)
+    await onBet(match.id, betWinner || null, homeScore !== '' ? parseInt(homeScore) : null, awayScore !== '' ? parseInt(awayScore) : null)
     setSaving(false)
     setSaved(true)
     setTimeout(() => setSaved(false), 2000)
     setShowBet(false)
   }
 
-  const statusColor = match.status === 'live'
-    ? 'text-red-400'
-    : match.status === 'finished'
-    ? 'text-gray-500'
-    : 'text-green-400'
+  const isLive = match.status === 'live'
+  const isFinished = match.status === 'finished'
 
-  const statusLabel = match.status === 'live' ? '🔴 LIVE' : match.status === 'finished' ? 'הסתיים' : 'עתיד'
-
-  const borderColor = match.status === 'live'
-    ? 'border-red-500/40'
-    : match.status === 'finished'
-    ? 'border-[#1e1e3a]'
+  const cardStyle = isLive
+    ? { background: 'linear-gradient(160deg, #1a0808 0%, #0d0408 100%)', borderColor: 'rgba(239,68,68,0.35)' }
     : hasBet
-    ? 'border-green-500/30'
-    : 'border-[#1e1e3a]'
+    ? { background: 'linear-gradient(160deg, #071a0f 0%, #04100a 100%)', borderColor: 'rgba(34,197,94,0.25)' }
+    : { background: 'linear-gradient(160deg, #0d0d22 0%, #070712 100%)', borderColor: '#1a1a30' }
 
   return (
-    <div className={`rounded-xl p-4 transition hover:border-[#3e3e6a] border ${borderColor}`}
-      style={{ background: 'linear-gradient(160deg, #0d0d22 0%, #080814 100%)' }}>
+    <div className="rounded-2xl p-4 border transition hover:brightness-110" style={cardStyle}>
       {/* Header */}
-      <div className="flex items-center justify-between mb-3 text-xs text-gray-500">
-        <span>{STAGE_LABELS[match.stage] || match.stage}{match.group_name ? ` - בית ${match.group_name}` : ''}</span>
-        <span className={`font-semibold ${statusColor}`}>{statusLabel}</span>
+      <div className="flex items-center justify-between mb-4 text-xs">
+        <span className="text-gray-500">
+          {STAGE_LABELS[match.stage]}{match.group_name ? ` · בית ${match.group_name}` : ''}
+        </span>
+        {isLive && (
+          <span className="flex items-center gap-1 bg-red-500/20 text-red-400 px-2 py-0.5 rounded-full font-bold animate-pulse">
+            <span className="w-1.5 h-1.5 rounded-full bg-red-500 inline-block" />
+            LIVE
+          </span>
+        )}
+        {isFinished && <span className="text-gray-600 font-medium">הסתיים</span>}
+        {!isLive && !isFinished && <span className="text-green-400/70 font-medium">עתיד</span>}
       </div>
 
-      {/* Teams */}
-      <div className="flex items-center justify-between gap-2">
-        {/* Home */}
+      {/* Teams + Score */}
+      <div className="flex items-center justify-between gap-3 mb-4">
         <div className="flex-1 text-center">
-          <div className="text-2xl mb-1">{match.home_flag}</div>
-          <div className="text-sm font-medium leading-tight">{match.home_team}</div>
+          <div className="text-3xl mb-1.5">{match.home_flag}</div>
+          <div className="text-sm font-semibold text-white leading-tight">{match.home_team}</div>
         </div>
 
-        {/* Score / VS */}
-        <div className="text-center px-3">
+        <div className="text-center px-2 flex-shrink-0">
           {match.status !== 'upcoming' && match.home_score !== null ? (
-            <div className="text-2xl font-bold text-white">
-              {match.home_score} : {match.away_score}
+            <div className="text-3xl font-black text-white tabular-nums">
+              {match.home_score}<span className="text-gray-600 mx-1">:</span>{match.away_score}
             </div>
           ) : (
-            <div className="text-lg text-gray-500 font-bold">נגד</div>
+            <div className="text-gray-600 font-bold text-lg">vs</div>
           )}
         </div>
 
-        {/* Away */}
         <div className="flex-1 text-center">
-          <div className="text-2xl mb-1">{match.away_flag}</div>
-          <div className="text-sm font-medium leading-tight">{match.away_team}</div>
+          <div className="text-3xl mb-1.5">{match.away_flag}</div>
+          <div className="text-sm font-semibold text-white leading-tight">{match.away_team}</div>
         </div>
       </div>
 
       {/* Date & venue */}
-      <div className="flex items-center justify-center gap-3 mt-3 text-xs text-gray-500">
-        <span className="flex items-center gap-1"><Clock size={11} />{formatMatchDate(match.match_date)}</span>
-        {match.venue && <span className="flex items-center gap-1"><MapPin size={11} />{match.venue}</span>}
+      <div className="flex items-center justify-center gap-3 text-xs text-gray-600 mb-4">
+        <span className="flex items-center gap-1"><Clock size={10} />{formatMatchDate(match.match_date)}</span>
+        {match.venue && <span className="flex items-center gap-1"><MapPin size={10} />{match.venue}</span>}
       </div>
 
-      {/* Bet status / action */}
-      <div className="mt-3 border-t border-[#1e1e2e] pt-3">
-        {match.status === 'finished' && bet ? (
-          <BetResult bet={bet} match={match} />
-        ) : match.status === 'finished' ? (
-          <p className="text-center text-xs text-gray-600">לא הימרת על משחק זה</p>
-        ) : !bettable ? (
-          <div className="flex items-center justify-center gap-1 text-xs text-yellow-500">
-            <Lock size={12} />
-            ההימורים נסגרו (30 דקות לפני המשחק)
-          </div>
-        ) : hasBet && !showBet ? (
-          <div className="text-center">
-            <BetSummary bet={bet} />
-            <button onClick={() => setShowBet(true)} className="text-xs text-blue-400 hover:text-blue-300 mt-1 transition">
-              ערוך הימור
-            </button>
-          </div>
-        ) : showBet || !hasBet ? (
-          <BetForm
-            betWinner={betWinner}
-            setBetWinner={setBetWinner}
-            homeScore={homeScore}
-            setHomeScore={setHomeScore}
-            awayScore={awayScore}
-            setAwayScore={setAwayScore}
-            homeTeam={match.home_team}
-            awayTeam={match.away_team}
-            onSave={handleSave}
-            onCancel={hasBet ? () => setShowBet(false) : undefined}
-            saving={saving}
-            saved={saved}
-          />
-        ) : null}
-      </div>
+      {/* Divider */}
+      <div className="h-px bg-gradient-to-l from-transparent via-[#1e1e3a] to-transparent mb-3" />
+
+      {/* Bet area */}
+      {isFinished && bet ? (
+        <BetResult bet={bet} match={match} />
+      ) : isFinished ? (
+        <p className="text-center text-xs text-gray-700">לא הימרת על משחק זה</p>
+      ) : !bettable ? (
+        <div className="flex items-center justify-center gap-1.5 text-xs text-yellow-500/80">
+          <Lock size={11} />
+          ההימורים נסגרו (30 דקות לפני)
+        </div>
+      ) : hasBet && !showBet ? (
+        <div className="text-center">
+          <BetSummary bet={bet} />
+          <button onClick={() => setShowBet(true)} className="text-xs text-blue-400/70 hover:text-blue-400 mt-2 transition">
+            ✏️ ערוך הימור
+          </button>
+        </div>
+      ) : (
+        <BetForm
+          betWinner={betWinner} setBetWinner={setBetWinner}
+          homeScore={homeScore} setHomeScore={setHomeScore}
+          awayScore={awayScore} setAwayScore={setAwayScore}
+          homeTeam={match.home_team} awayTeam={match.away_team}
+          onSave={handleSave} onCancel={hasBet ? () => setShowBet(false) : undefined}
+          saving={saving} saved={saved}
+        />
+      )}
     </div>
   )
 }
@@ -136,101 +126,75 @@ export default function MatchCard({ match, bet, onBet, currentUserId }: Props) {
 function BetSummary({ bet }: { bet: Bet }) {
   const winnerLabel = bet.bet_winner === 'home' ? 'ניצחון בית' : bet.bet_winner === 'away' ? 'ניצחון חוץ' : bet.bet_winner === 'draw' ? 'תיקו' : null
   return (
-    <div className="text-xs text-gray-400 text-center">
-      {winnerLabel && <span className="bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded mr-1">{winnerLabel}</span>}
-      {bet.bet_home_score !== null && <span className="bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded">
-        {bet.bet_home_score}:{bet.bet_away_score}
-      </span>}
+    <div className="flex items-center justify-center gap-2 text-xs">
+      {winnerLabel && <span className="bg-blue-500/15 text-blue-300 border border-blue-500/20 px-2 py-1 rounded-lg">{winnerLabel}</span>}
+      {bet.bet_home_score !== null && (
+        <span className="bg-purple-500/15 text-purple-300 border border-purple-500/20 px-2 py-1 rounded-lg font-mono">
+          {bet.bet_home_score}:{bet.bet_away_score}
+        </span>
+      )}
     </div>
   )
 }
 
 function BetResult({ bet, match }: { bet: Bet; match: Match }) {
-  const points = bet.points_earned
-  const positive = points !== null && points > 0
-  const negative = points !== null && points < 0
+  const pts = bet.points_earned
+  const positive = pts !== null && pts > 0
   return (
-    <div className="flex items-center justify-between text-xs">
+    <div className="flex items-center justify-between">
       <BetSummary bet={bet} />
-      <span className={`font-bold ${positive ? 'text-green-400' : negative ? 'text-red-400' : 'text-gray-400'}`}>
-        {points !== null ? (positive ? `+${points}` : `${points}`) : '—'} נקודות
+      <span className={`font-black text-lg ${positive ? 'text-green-400' : pts !== null && pts < 0 ? 'text-red-400' : 'text-gray-500'}`}>
+        {pts !== null ? (positive ? `+${pts}` : `${pts}`) : '—'}
       </span>
     </div>
   )
 }
 
-function BetForm({
-  betWinner, setBetWinner,
-  homeScore, setHomeScore,
-  awayScore, setAwayScore,
-  homeTeam, awayTeam,
-  onSave, onCancel, saving, saved
-}: {
-  betWinner: string; setBetWinner: (v: string) => void
-  homeScore: string; setHomeScore: (v: string) => void
-  awayScore: string; setAwayScore: (v: string) => void
-  homeTeam: string; awayTeam: string
-  onSave: () => void; onCancel?: () => void
-  saving: boolean; saved: boolean
-}) {
+function BetForm({ betWinner, setBetWinner, homeScore, setHomeScore, awayScore, setAwayScore, homeTeam, awayTeam, onSave, onCancel, saving, saved }:
+  { betWinner: string; setBetWinner: (v: string) => void; homeScore: string; setHomeScore: (v: string) => void; awayScore: string; setAwayScore: (v: string) => void; homeTeam: string; awayTeam: string; onSave: () => void; onCancel?: () => void; saving: boolean; saved: boolean }) {
   return (
     <div className="space-y-3">
-      {/* Winner bet */}
       <div>
-        <p className="text-xs text-gray-500 mb-1.5">מי ינצח? (+3/-1)</p>
-        <div className="flex gap-1">
-          {[
-            { val: 'home', label: homeTeam },
-            { val: 'draw', label: 'תיקו' },
-            { val: 'away', label: awayTeam },
-          ].map(opt => (
-            <button
-              key={opt.val}
-              onClick={() => setBetWinner(betWinner === opt.val ? '' : opt.val)}
-              className={`flex-1 py-1.5 px-1 rounded text-xs transition ${
+        <p className="text-xs text-gray-500 mb-2 text-center">מי ינצח? <span className="text-green-400">+3</span> / <span className="text-red-400">-1</span></p>
+        <div className="flex gap-1.5">
+          {[{ val: 'home', label: homeTeam }, { val: 'draw', label: 'תיקו' }, { val: 'away', label: awayTeam }].map(opt => (
+            <button key={opt.val} onClick={() => setBetWinner(betWinner === opt.val ? '' : opt.val)}
+              className={`flex-1 py-2 px-1 rounded-xl text-xs font-medium transition ${
                 betWinner === opt.val
-                  ? 'bg-green-500 text-white'
-                  : 'bg-[#1e1e2e] text-gray-400 hover:bg-[#2a2a3e]'
+                  ? 'text-white shadow'
+                  : 'text-gray-500 hover:text-gray-300'
               }`}
-            >
+              style={betWinner === opt.val
+                ? { background: 'linear-gradient(135deg, #15803d, #22c55e)', boxShadow: '0 2px 10px rgba(34,197,94,0.3)' }
+                : { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
               {opt.label}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Score bet */}
       <div>
-        <p className="text-xs text-gray-500 mb-1.5">תוצאה מדויקת? (+6/-3)</p>
+        <p className="text-xs text-gray-500 mb-2 text-center">תוצאה מדויקת? <span className="text-green-400">+6</span> / <span className="text-red-400">-3</span></p>
         <div className="flex items-center gap-2">
-          <input
-            type="number" min={0} max={20}
-            value={homeScore}
-            onChange={e => setHomeScore(e.target.value)}
-            placeholder="בית"
-            className="w-full bg-[#1e1e2e] text-white text-center rounded py-1.5 text-sm outline-none border border-[#2a2a3e] focus:border-green-500"
-          />
-          <span className="text-gray-500 font-bold">:</span>
-          <input
-            type="number" min={0} max={20}
-            value={awayScore}
-            onChange={e => setAwayScore(e.target.value)}
-            placeholder="חוץ"
-            className="w-full bg-[#1e1e2e] text-white text-center rounded py-1.5 text-sm outline-none border border-[#2a2a3e] focus:border-green-500"
-          />
+          <input type="number" min={0} max={20} value={homeScore} onChange={e => setHomeScore(e.target.value)}
+            placeholder="בית" className="w-full text-center rounded-xl py-2 text-sm outline-none text-white font-bold"
+            style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }} />
+          <span className="text-gray-600 font-black text-lg">:</span>
+          <input type="number" min={0} max={20} value={awayScore} onChange={e => setAwayScore(e.target.value)}
+            placeholder="חוץ" className="w-full text-center rounded-xl py-2 text-sm outline-none text-white font-bold"
+            style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }} />
         </div>
       </div>
 
       <div className="flex gap-2">
-        <button
-          onClick={onSave}
-          disabled={saving || saved || (!betWinner && homeScore === '' && awayScore === '')}
-          className="flex-1 bg-green-500 hover:bg-green-600 disabled:opacity-50 text-white text-sm py-2 rounded-lg transition font-medium"
-        >
-          {saved ? '✓ נשמר' : saving ? 'שומר...' : 'שמור הימור'}
+        <button onClick={onSave} disabled={saving || saved || (!betWinner && homeScore === '' && awayScore === '')}
+          className="flex-1 text-white text-sm py-2.5 rounded-xl transition font-semibold disabled:opacity-40"
+          style={{ background: saved ? 'rgba(34,197,94,0.3)' : 'linear-gradient(135deg, #15803d, #22c55e)', boxShadow: '0 2px 15px rgba(34,197,94,0.2)' }}>
+          {saved ? '✓ נשמר!' : saving ? '...' : 'שמור הימור'}
         </button>
         {onCancel && (
-          <button onClick={onCancel} className="px-3 bg-[#1e1e2e] text-gray-400 rounded-lg text-sm hover:bg-[#2a2a3e] transition">
+          <button onClick={onCancel} className="px-4 text-gray-500 hover:text-gray-300 rounded-xl text-sm transition"
+            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
             ביטול
           </button>
         )}

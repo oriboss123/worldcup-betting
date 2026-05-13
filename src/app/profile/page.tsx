@@ -20,6 +20,10 @@ export default function ProfilePage() {
   const [nickname, setNickname] = useState('')
   const [saving, setSaving] = useState(false)
   const [fetching, setFetching] = useState(true)
+  const [pinMode, setPinMode] = useState(false)
+  const [newPin, setNewPin] = useState('')
+  const [pinSaving, setPinSaving] = useState(false)
+  const [pinMsg, setPinMsg] = useState('')
 
   useEffect(() => {
     if (!user) { router.push('/register'); return }
@@ -39,6 +43,21 @@ export default function ProfilePage() {
     }
     fetchBets()
   }, [user])
+
+  const handleSavePin = async () => {
+    if (!user || newPin.length !== 4 || !/^\d{4}$/.test(newPin)) {
+      setPinMsg('קוד PIN חייב להיות 4 ספרות')
+      return
+    }
+    setPinSaving(true)
+    const { data } = await supabase.from('users').update({ pin: newPin }).eq('id', user.id).select().single()
+    if (data) { setUser(data); localStorage.setItem('wc_user', JSON.stringify(data)) }
+    setPinSaving(false)
+    setPinMode(false)
+    setNewPin('')
+    setPinMsg('✅ קוד PIN נשמר בהצלחה!')
+    setTimeout(() => setPinMsg(''), 3000)
+  }
 
   const handleSave = async () => {
     if (!user) return
@@ -114,6 +133,43 @@ export default function ProfilePage() {
             </div>
           </div>
         )}
+      </div>
+
+      {/* PIN setup */}
+      <div className="bg-[#0a0a1a] border border-[#1a1a30] rounded-xl p-5 mb-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm font-semibold text-white">קוד PIN</p>
+            <p className="text-xs text-gray-500 mt-0.5">
+              {user.pin ? '✅ קוד PIN מוגדר — מגן על החשבון שלך' : '⚠️ לא הגדרת קוד PIN עדיין'}
+            </p>
+          </div>
+          <button onClick={() => { setPinMode(p => !p); setPinMsg('') }}
+            className="text-xs text-blue-400 hover:text-blue-300 transition">
+            {user.pin ? 'שנה PIN' : 'הגדר PIN'}
+          </button>
+        </div>
+        {pinMode && (
+          <div className="mt-4 space-y-3">
+            <input
+              type="password" inputMode="numeric" maxLength={4}
+              value={newPin} onChange={e => setNewPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
+              placeholder="4 ספרות"
+              className="w-full bg-[#070712] border border-[#2a2a4e] rounded-xl px-4 py-2.5 text-white text-center text-xl tracking-widest outline-none focus:border-green-500 transition"
+            />
+            <div className="flex gap-2">
+              <button onClick={handleSavePin} disabled={pinSaving}
+                className="flex-1 bg-green-500 hover:bg-green-600 text-white text-sm py-2.5 rounded-xl transition font-semibold disabled:opacity-50">
+                {pinSaving ? '...' : 'שמור PIN'}
+              </button>
+              <button onClick={() => { setPinMode(false); setNewPin('') }}
+                className="px-4 text-gray-500 hover:text-gray-300 border border-[#1a1a30] rounded-xl text-sm transition">
+                ביטול
+              </button>
+            </div>
+          </div>
+        )}
+        {pinMsg && <p className="text-xs mt-3 text-green-400">{pinMsg}</p>}
       </div>
 
       {/* Stats */}

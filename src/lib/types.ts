@@ -3,6 +3,7 @@ export interface User {
   name: string
   nickname: string | null
   phone: string
+  pin: string | null
   total_points: number
   created_at: string
 }

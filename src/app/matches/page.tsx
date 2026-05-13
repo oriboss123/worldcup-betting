@@ -11,6 +11,34 @@ import MatchCard from '@/components/MatchCard'
 import WelcomeModal from '@/components/WelcomeModal'
 import { Search } from 'lucide-react'
 
+function ScoringGuide() {
+  const [open, setOpen] = useState(false)
+  return (
+    <div className="rounded-2xl mb-6 border border-[#1a1a30] overflow-hidden"
+      style={{ background: 'linear-gradient(135deg, #0a0a1a 0%, #070712 100%)' }}>
+      <button onClick={() => setOpen(o => !o)}
+        className="w-full px-4 py-3 flex items-center justify-between text-xs font-semibold text-gray-400 hover:text-gray-200 transition">
+        <span>📊 מבנה הניקוד</span>
+        <span className="text-gray-600">{open ? '▲' : '▼'} לחץ לפרטים</span>
+      </button>
+      {open && (
+        <div className="grid grid-cols-2 border-t border-[#1a1a30]" style={{ borderRight: '1px solid #1a1a30' }}>
+          <div className="p-3 space-y-2">
+            <p className="text-xs text-green-400/70 font-semibold mb-2">✅ נכון</p>
+            <div className="flex justify-between"><span className="text-xs text-gray-400">מנצח</span><span className="text-green-400 font-bold">+3</span></div>
+            <div className="flex justify-between"><span className="text-xs text-gray-400">תוצאה מדויקת</span><span className="text-green-400 font-bold">+6</span></div>
+          </div>
+          <div className="p-3 space-y-2" style={{ borderRight: '1px solid #1a1a30' }}>
+            <p className="text-xs text-red-400/70 font-semibold mb-2">❌ טעות</p>
+            <div className="flex justify-between"><span className="text-xs text-gray-400">מנצח</span><span className="text-red-400 font-bold">-1</span></div>
+            <div className="flex justify-between"><span className="text-xs text-gray-400">תוצאה מדויקת</span><span className="text-red-400 font-bold">-3</span></div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
 const STAGES = ['group', 'round_of_32', 'round_of_16', 'quarter', 'semi', 'third_place', 'final']
 const STATUS_FILTER = ['הכל', 'עתיד', 'הסתיים']
 const WC_START = new Date('2026-06-11T00:00:00')
@@ -121,37 +149,8 @@ export default function MatchesPage() {
         </div>
       )}
 
-      {/* Scoring guide */}
-      <div className="rounded-2xl mb-6 border border-[#1e1e3a] overflow-hidden"
-        style={{ background: 'linear-gradient(135deg, #0d0d1f 0%, #0a0f20 100%)' }}>
-        <div className="px-4 py-3 border-b border-[#1e1e3a]">
-          <p className="text-xs font-semibold text-gray-400 text-center">📊 מבנה הניקוד</p>
-        </div>
-        <div className="grid grid-cols-2 divide-x divide-x-reverse divide-[#1e1e3a]">
-          <div className="p-3 space-y-2">
-            <p className="text-xs text-gray-500 font-semibold mb-2">✅ ניחשת נכון</p>
-            <div className="flex justify-between items-center">
-              <span className="text-xs text-gray-400">מנצח נכון</span>
-              <span className="text-green-400 font-bold text-sm">+3</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-xs text-gray-400">תוצאה מדויקת</span>
-              <span className="text-green-400 font-bold text-sm">+6</span>
-            </div>
-          </div>
-          <div className="p-3 space-y-2">
-            <p className="text-xs text-gray-500 font-semibold mb-2">❌ ניחשת טעות</p>
-            <div className="flex justify-between items-center">
-              <span className="text-xs text-gray-400">מנצח טעות</span>
-              <span className="text-red-400 font-bold text-sm">-1</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-xs text-gray-400">תוצאה טעות</span>
-              <span className="text-red-400 font-bold text-sm">-3</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Scoring guide — collapsible */}
+      <ScoringGuide />
 
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
