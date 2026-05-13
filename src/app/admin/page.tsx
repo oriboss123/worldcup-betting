@@ -9,7 +9,7 @@ import { Match } from '@/lib/types'
 import { STAGE_LABELS } from '@/lib/wc2026-matches'
 import { formatMatchDate } from '@/lib/utils'
 
-const ADMIN_PHONE = '0500000000' // Change to your phone
+const ADMIN_PHONE = '0549774566'
 
 export default function AdminPage() {
   const { user, loading } = useUser()
