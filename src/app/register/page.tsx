@@ -136,7 +136,7 @@ export default function RegisterPage() {
                     value={name}
                     onChange={e => setName(e.target.value)}
                     placeholder="ישראל ישראלי"
-                    className="w-full bg-transparent text-white placeholder-gray-600 outline-none text-base"
+                    className="w-full bg-transparent text-white placeholder-gray-600 outline-none text-lg"
                     required
                   />
                 </Field>
@@ -146,7 +146,7 @@ export default function RegisterPage() {
                     value={nickname}
                     onChange={e => setNickname(e.target.value)}
                     placeholder="הכינוי שלך בדירוג"
-                    className="w-full bg-transparent text-white placeholder-gray-600 outline-none text-base"
+                    className="w-full bg-transparent text-white placeholder-gray-600 outline-none text-lg"
                   />
                 </Field>
               </>
@@ -158,7 +158,7 @@ export default function RegisterPage() {
                 value={phone}
                 onChange={e => setPhone(e.target.value)}
                 placeholder="050-0000000"
-                className="w-full bg-transparent text-white placeholder-gray-600 outline-none text-base"
+                className="w-full bg-transparent text-white placeholder-gray-600 outline-none text-lg"
                 required
               />
             </Field>
@@ -206,8 +206,8 @@ function Field({ icon, label, children }: { icon: React.ReactNode; label: string
   return (
     <div>
       <label className="text-sm text-gray-400 block mb-2 font-medium">{label}</label>
-      <div className="flex items-center gap-3 bg-[#070712] border border-[#2a2a3e] rounded-xl px-5 py-4 focus-within:border-green-500 transition">
-        <span className="text-gray-500 flex-shrink-0">{icon}</span>
+      <div className="flex items-center gap-3 bg-[#070712] border border-[#2a2a3e] rounded-xl px-5 py-5 focus-within:border-green-500 transition">
+        <span className="text-gray-500 flex-shrink-0 text-lg">{icon}</span>
         {children}
       </div>
     </div>
