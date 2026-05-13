@@ -1,10 +1,10 @@
 @import "tailwindcss";
 
 :root {
-  --background: #070712;
+  --background: #060611;
   --foreground: #f0f0f0;
-  --card: #0f0f1e;
-  --card-border: #1a1a2e;
+  --card: #0d0d1f;
+  --card-border: #1e1e3a;
   --accent: #22c55e;
   --accent-hover: #16a34a;
   --muted: #6b7280;
@@ -26,39 +26,30 @@
 
 body {
   background-color: var(--background);
-  background-image:
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(34,197,94,0.12) 0%, transparent 60%),
-    repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 80px,
-      rgba(255,255,255,0.012) 80px,
-      rgba(255,255,255,0.012) 81px
-    ),
-    repeating-linear-gradient(
-      90deg,
-      transparent,
-      transparent 80px,
-      rgba(255,255,255,0.012) 80px,
-      rgba(255,255,255,0.012) 81px
-    );
-  background-attachment: fixed;
   color: var(--foreground);
   font-family: 'Segoe UI', 'Arial', sans-serif;
   direction: rtl;
+  min-height: 100vh;
 }
+
+/* Top green glow */
+body::before {
+  content: '';
+  position: fixed;
+  top: -200px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 800px;
+  height: 400px;
+  background: radial-gradient(ellipse, rgba(34,197,94,0.18) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* All content above the pseudo-element */
+#__next, main, nav { position: relative; z-index: 1; }
 
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: var(--background); }
-::-webkit-scrollbar-thumb { background: #2d2d4f; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #3d3d6f; }
-
-.card {
-  background: var(--card);
-  border: 1px solid var(--card-border);
-  border-radius: 1rem;
-}
-
-.glow-green {
-  box-shadow: 0 0 20px rgba(34,197,94,0.15);
-}
+::-webkit-scrollbar-thumb { background: #2d2d5f; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #4d4d8f; }

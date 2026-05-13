@@ -31,7 +31,7 @@ export default function RegisterPage() {
       return
     }
 
-    if (pin.length !== 4 || !/^\d{4}$/.test(pin)) {
+    if (mode === 'register' && (pin.length !== 4 || !/^\d{4}$/.test(pin))) {
       setError('קוד PIN חייב להיות 4 ספרות')
       setLoading(false)
       return
@@ -83,11 +83,15 @@ export default function RegisterPage() {
         return
       }
 
-      if (data.pin && data.pin !== pin) {
-        setError('קוד PIN שגוי.')
-        setLoading(false)
-        return
+      if (data.pin) {
+        // existing user with PIN — must verify
+        if (pin.length !== 4 || data.pin !== pin) {
+          setError('קוד PIN שגוי.')
+          setLoading(false)
+          return
+        }
       }
+      // existing user without PIN — let them in (legacy)
 
       setUser(data)
       router.push('/matches')
@@ -159,7 +163,7 @@ export default function RegisterPage() {
               />
             </Field>
 
-            <Field icon={<Lock size={15} />} label={mode === 'register' ? 'קוד PIN (4 ספרות) *' : 'קוד PIN *'}>
+            <Field icon={<Lock size={15} />} label={mode === 'register' ? 'קוד PIN (4 ספרות) *' : 'קוד PIN (אם הגדרת)'}>
               <input
                 type="password"
                 value={pin}

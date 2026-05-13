@@ -9,15 +9,31 @@ import { Match, Bet } from '@/lib/types'
 import { STAGE_LABELS } from '@/lib/wc2026-matches'
 import MatchCard from '@/components/MatchCard'
 import WelcomeModal from '@/components/WelcomeModal'
-import { Search, Info } from 'lucide-react'
+import { Search } from 'lucide-react'
 
 const STAGES = ['group', 'round_of_32', 'round_of_16', 'quarter', 'semi', 'third_place', 'final']
 const STATUS_FILTER = ['הכל', 'עתיד', 'הסתיים']
+const WC_START = new Date('2026-06-11T00:00:00')
+
+function useCountdown() {
+  const [diff, setDiff] = useState(WC_START.getTime() - Date.now())
+  useEffect(() => {
+    const t = setInterval(() => setDiff(WC_START.getTime() - Date.now()), 1000)
+    return () => clearInterval(t)
+  }, [])
+  const total = Math.max(0, diff)
+  const days = Math.floor(total / 86400000)
+  const hours = Math.floor((total % 86400000) / 3600000)
+  const mins = Math.floor((total % 3600000) / 60000)
+  const secs = Math.floor((total % 60000) / 1000)
+  return { days, hours, mins, secs, started: diff <= 0 }
+}
 
 export default function MatchesPage() {
   const { user, loading } = useUser()
   const router = useRouter()
   const supabase = createClient()
+  const { days, hours, mins, secs, started } = useCountdown()
 
   const [matches, setMatches] = useState<Match[]>([])
   const [bets, setBets] = useState<Record<string, Bet>>({})
@@ -33,12 +49,10 @@ export default function MatchesPage() {
   const fetchData = useCallback(async () => {
     if (!user) return
     setFetching(true)
-
     const [{ data: matchData }, { data: betData }] = await Promise.all([
       supabase.from('matches').select('*').order('match_number'),
       supabase.from('bets').select('*').eq('user_id', user.id),
     ])
-
     if (matchData) setMatches(matchData)
     if (betData) {
       const map: Record<string, Bet> = {}
@@ -48,28 +62,18 @@ export default function MatchesPage() {
     setFetching(false)
   }, [user])
 
-  useEffect(() => {
-    fetchData()
-  }, [fetchData])
+  useEffect(() => { fetchData() }, [fetchData])
 
   const handleBet = async (matchId: string, winner: string | null, homeScore: number | null, awayScore: number | null) => {
     if (!user) return
     const existing = bets[matchId]
     if (existing) {
       await supabase.from('bets').update({
-        bet_winner: winner,
-        bet_home_score: homeScore,
-        bet_away_score: awayScore,
+        bet_winner: winner, bet_home_score: homeScore, bet_away_score: awayScore,
         updated_at: new Date().toISOString(),
       }).eq('id', existing.id)
     } else {
-      await supabase.from('bets').insert({
-        user_id: user.id,
-        match_id: matchId,
-        bet_winner: winner,
-        bet_home_score: homeScore,
-        bet_away_score: awayScore,
-      })
+      await supabase.from('bets').insert({ user_id: user.id, match_id: matchId, bet_winner: winner, bet_home_score: homeScore, bet_away_score: awayScore })
     }
     await fetchData()
   }
@@ -82,7 +86,6 @@ export default function MatchesPage() {
     return true
   })
 
-  // Group by group letter for group stage
   const grouped = filtered.reduce<Record<string, Match[]>>((acc, m) => {
     const key = m.group_name || 'general'
     if (!acc[key]) acc[key] = []
@@ -96,15 +99,62 @@ export default function MatchesPage() {
     <div className="max-w-4xl mx-auto px-4 py-6">
       <WelcomeModal />
 
-      {/* Info banner */}
-      <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl px-4 py-3 mb-5 flex items-start gap-3 text-sm text-blue-300">
-        <Info size={16} className="mt-0.5 flex-shrink-0" />
-        <span>
-          הימר לפני כל משחק — <strong>מנצח נכון = +3</strong>, <strong>תוצאה מדויקת = +6</strong>. ניתן להמר עד 30 דקות לפני הקיקאוף.
-        </span>
+      {/* Countdown / Tournament started banner */}
+      {!started ? (
+        <div className="rounded-2xl mb-6 overflow-hidden border border-green-500/30"
+          style={{ background: 'linear-gradient(135deg, #052010 0%, #0a1a1a 100%)' }}>
+          <div className="px-5 py-4">
+            <p className="text-green-400 text-xs font-semibold mb-3 text-center tracking-wider">⚽ מונדיאל 2026 פותח בעוד</p>
+            <div className="grid grid-cols-4 gap-2">
+              {[{ v: days, l: 'ימים' }, { v: hours, l: 'שעות' }, { v: mins, l: 'דקות' }, { v: secs, l: 'שניות' }].map(({ v, l }) => (
+                <div key={l} className="bg-black/40 rounded-xl py-3 text-center border border-green-500/10">
+                  <div className="text-2xl font-black text-white tabular-nums">{String(v).padStart(2, '0')}</div>
+                  <div className="text-xs text-green-400/70 mt-0.5">{l}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="bg-green-500/10 border border-green-500/30 rounded-2xl px-5 py-3 mb-6 text-center text-green-300 font-semibold">
+          🏆 המונדיאל החל! הימר לפני כל משחק
+        </div>
+      )}
+
+      {/* Scoring guide */}
+      <div className="rounded-2xl mb-6 border border-[#1e1e3a] overflow-hidden"
+        style={{ background: 'linear-gradient(135deg, #0d0d1f 0%, #0a0f20 100%)' }}>
+        <div className="px-4 py-3 border-b border-[#1e1e3a]">
+          <p className="text-xs font-semibold text-gray-400 text-center">📊 מבנה הניקוד</p>
+        </div>
+        <div className="grid grid-cols-2 divide-x divide-x-reverse divide-[#1e1e3a]">
+          <div className="p-3 space-y-2">
+            <p className="text-xs text-gray-500 font-semibold mb-2">✅ ניחשת נכון</p>
+            <div className="flex justify-between items-center">
+              <span className="text-xs text-gray-400">מנצח נכון</span>
+              <span className="text-green-400 font-bold text-sm">+3</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-xs text-gray-400">תוצאה מדויקת</span>
+              <span className="text-green-400 font-bold text-sm">+6</span>
+            </div>
+          </div>
+          <div className="p-3 space-y-2">
+            <p className="text-xs text-gray-500 font-semibold mb-2">❌ ניחשת טעות</p>
+            <div className="flex justify-between items-center">
+              <span className="text-xs text-gray-400">מנצח טעות</span>
+              <span className="text-red-400 font-bold text-sm">-1</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-xs text-gray-400">תוצאה טעות</span>
+              <span className="text-red-400 font-bold text-sm">-3</span>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div className="flex items-center justify-between mb-6">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-4">
         <h1 className="text-2xl font-bold text-white">משחקים</h1>
         <div className="relative">
           <Search className="absolute top-2.5 right-3 text-gray-500" size={15} />
@@ -113,19 +163,21 @@ export default function MatchesPage() {
             placeholder="חפש קבוצה..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="bg-[#13131f] border border-[#2a2a3e] rounded-lg pr-9 pl-3 py-2 text-sm text-white placeholder-gray-600 outline-none focus:border-green-500 w-40"
+            className="bg-[#0d0d1f] border border-[#1e1e3a] rounded-lg pr-9 pl-3 py-2 text-sm text-white placeholder-gray-600 outline-none focus:border-green-500 w-40"
           />
         </div>
       </div>
 
       {/* Stage tabs */}
-      <div className="flex gap-1 overflow-x-auto pb-2 mb-4">
+      <div className="flex gap-1.5 overflow-x-auto pb-2 mb-4">
         {STAGES.map(s => (
           <button
             key={s}
             onClick={() => setStage(s)}
-            className={`whitespace-nowrap px-3 py-1.5 rounded-lg text-sm transition ${
-              stage === s ? 'bg-green-500 text-white' : 'bg-[#13131f] text-gray-400 hover:text-white'
+            className={`whitespace-nowrap px-3 py-1.5 rounded-lg text-sm transition font-medium ${
+              stage === s
+                ? 'bg-gradient-to-l from-green-500 to-emerald-400 text-white shadow shadow-green-500/25'
+                : 'bg-[#0d0d1f] border border-[#1e1e3a] text-gray-400 hover:text-white hover:border-[#2e2e5a]'
             }`}
           >
             {STAGE_LABELS[s]}
@@ -140,7 +192,7 @@ export default function MatchesPage() {
             key={f}
             onClick={() => setStatusFilter(f)}
             className={`px-3 py-1 rounded-full text-xs transition ${
-              statusFilter === f ? 'bg-[#2a2a3e] text-white' : 'text-gray-500 hover:text-gray-300'
+              statusFilter === f ? 'bg-[#1e1e3a] text-white border border-[#3e3e6a]' : 'text-gray-500 hover:text-gray-300'
             }`}
           >
             {f}
@@ -149,7 +201,10 @@ export default function MatchesPage() {
       </div>
 
       {fetching ? (
-        <div className="text-center text-gray-500 py-12">טוען משחקים...</div>
+        <div className="text-center text-gray-500 py-12">
+          <div className="text-4xl mb-3 animate-pulse">⚽</div>
+          טוען משחקים...
+        </div>
       ) : filtered.length === 0 ? (
         <div className="text-center text-gray-500 py-12">
           <div className="text-4xl mb-3">🔍</div>
@@ -158,8 +213,11 @@ export default function MatchesPage() {
       ) : stage === 'group' ? (
         Object.entries(grouped).sort().map(([groupLetter, groupMatches]) => (
           <div key={groupLetter} className="mb-8">
-            <h2 className="text-lg font-bold text-gray-300 mb-3 flex items-center gap-2">
-              <span className="w-8 h-8 bg-[#1e1e2e] rounded-lg flex items-center justify-center text-sm">{groupLetter}</span>
+            <h2 className="text-base font-bold text-gray-300 mb-3 flex items-center gap-2">
+              <span className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold text-green-400"
+                style={{ background: 'linear-gradient(135deg, #052010, #0a1f0a)' }}>
+                {groupLetter}
+              </span>
               בית {groupLetter}
             </h2>
             <div className="grid gap-3 sm:grid-cols-2">

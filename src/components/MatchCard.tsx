@@ -45,12 +45,21 @@ export default function MatchCard({ match, bet, onBet, currentUserId }: Props) {
 
   const statusLabel = match.status === 'live' ? '🔴 LIVE' : match.status === 'finished' ? 'הסתיים' : 'עתיד'
 
+  const borderColor = match.status === 'live'
+    ? 'border-red-500/40'
+    : match.status === 'finished'
+    ? 'border-[#1e1e3a]'
+    : hasBet
+    ? 'border-green-500/30'
+    : 'border-[#1e1e3a]'
+
   return (
-    <div className="bg-[#13131f] border border-[#1e1e2e] rounded-xl p-4 hover:border-[#2e2e4e] transition">
+    <div className={`rounded-xl p-4 transition hover:border-[#3e3e6a] border ${borderColor}`}
+      style={{ background: 'linear-gradient(160deg, #0d0d22 0%, #080814 100%)' }}>
       {/* Header */}
       <div className="flex items-center justify-between mb-3 text-xs text-gray-500">
         <span>{STAGE_LABELS[match.stage] || match.stage}{match.group_name ? ` - בית ${match.group_name}` : ''}</span>
-        <span className={statusColor}>{statusLabel}</span>
+        <span className={`font-semibold ${statusColor}`}>{statusLabel}</span>
       </div>
 
       {/* Teams */}
