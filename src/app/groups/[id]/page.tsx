@@ -6,7 +6,7 @@ import { useUser } from '@/contexts/UserContext'
 import { useRouter, useParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Group, GroupMember } from '@/lib/types'
-import { ArrowRight, Copy, Check, Share2, LogOut, Crown, Medal, Trophy } from 'lucide-react'
+import { ArrowRight, Copy, Check, Share2, LogOut, Crown, Medal, Trophy, UserMinus } from 'lucide-react'
 import Link from 'next/link'
 
 export default function GroupPage() {
@@ -71,6 +71,12 @@ export default function GroupPage() {
     if (!user || !group) return
     await supabase.from('group_members').insert({ group_id: group.id, user_id: user.id })
     window.location.reload()
+  }
+
+  const handleKick = async (memberId: string, memberName: string) => {
+    if (!confirm(`להוציא את ${memberName} מהקבוצה?`)) return
+    await supabase.from('group_members').delete().eq('id', memberId)
+    setMembers(prev => prev.filter(m => m.id !== memberId))
   }
 
   if (loading || !user) return null
@@ -152,9 +158,18 @@ export default function GroupPage() {
                     {displayName} {isMe ? '👈' : ''}
                   </span>
                 </div>
-                <div className={`font-black text-lg ${m.points >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                <div className={`font-black text-lg ml-3 ${m.points >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                   {m.points >= 0 ? '+' : ''}{m.points}
                 </div>
+                {group.created_by === user.id && !isMe && (
+                  <button
+                    onClick={() => handleKick(m.id, displayName)}
+                    className="mr-2 p-1.5 rounded-lg text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition"
+                    title="הוצא מהקבוצה"
+                  >
+                    <UserMinus size={15} />
+                  </button>
+                )}
               </div>
             )
           })}

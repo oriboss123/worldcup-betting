@@ -136,7 +136,7 @@ export default function MatchCard({ match, bet, onBet }: Props) {
       ) : (
         <div className="space-y-3">
           {/* Mode selector */}
-          <div className="grid grid-cols-2 gap-1.5">
+          <div className="grid grid-cols-2 gap-2">
             <ModeBtn active={mode === 'winner'} onClick={() => switchMode('winner')}
               label="ניחוש מנצח" sub="+3 / -1" color="#15803d" />
             <ModeBtn active={mode === 'score'} onClick={() => switchMode('score')}
@@ -145,13 +145,13 @@ export default function MatchCard({ match, bet, onBet }: Props) {
 
           {/* Winner picker */}
           {mode === 'winner' && (
-            <div className="flex gap-1.5">
+            <div className="flex gap-2">
               {[{ val: 'home', label: match.home_team }, { val: 'draw', label: 'תיקו' }, { val: 'away', label: match.away_team }].map(opt => (
                 <button key={opt.val} onClick={() => setBetWinner(betWinner === opt.val ? '' : opt.val)}
-                  className="flex-1 py-2 px-1 rounded-xl text-xs font-medium transition"
+                  className="flex-1 py-3 px-2 rounded-xl text-sm font-semibold transition"
                   style={betWinner === opt.val
                     ? { background: 'linear-gradient(135deg, #15803d, #22c55e)', color: '#fff', boxShadow: '0 2px 10px rgba(34,197,94,0.3)' }
-                    : { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)', color: '#9ca3af' }}>
+                    : { background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', color: '#9ca3af' }}>
                   {opt.label}
                 </button>
               ))}
@@ -160,16 +160,16 @@ export default function MatchCard({ match, bet, onBet }: Props) {
 
           {/* Score picker */}
           {mode === 'score' && (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <input type="number" min={0} max={20} value={homeScore} onChange={e => setHomeScore(e.target.value)}
-                placeholder={match.home_team}
-                className="w-full text-center rounded-xl py-2.5 text-sm outline-none text-white font-bold placeholder-gray-700"
-                style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }} />
-              <span className="text-gray-600 font-black text-xl flex-shrink-0">:</span>
+                placeholder="0"
+                className="w-full text-center rounded-xl py-3 text-2xl outline-none text-white font-black placeholder-gray-700"
+                style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }} />
+              <span className="text-gray-500 font-black text-2xl flex-shrink-0">:</span>
               <input type="number" min={0} max={20} value={awayScore} onChange={e => setAwayScore(e.target.value)}
-                placeholder={match.away_team}
-                className="w-full text-center rounded-xl py-2.5 text-sm outline-none text-white font-bold placeholder-gray-700"
-                style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }} />
+                placeholder="0"
+                className="w-full text-center rounded-xl py-3 text-2xl outline-none text-white font-black placeholder-gray-700"
+                style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }} />
             </div>
           )}
 
@@ -177,13 +177,13 @@ export default function MatchCard({ match, bet, onBet }: Props) {
           {mode && (
             <div className="flex gap-2">
               <button onClick={handleSave} disabled={saving || saved || !canSave}
-                className="flex-1 text-white text-sm py-2.5 rounded-xl font-semibold transition disabled:opacity-40"
+                className="flex-1 text-white font-bold py-3.5 rounded-xl transition disabled:opacity-40 text-base"
                 style={{ background: saved ? 'rgba(34,197,94,0.3)' : 'linear-gradient(135deg, #15803d, #22c55e)', boxShadow: '0 2px 15px rgba(34,197,94,0.2)' }}>
                 {saved ? '✓ נשמר!' : saving ? '...' : 'שמור הימור'}
               </button>
               {hasBet && (
                 <button onClick={() => { setShowBet(false); setMode(getInitialMode(bet)) }}
-                  className="px-4 text-gray-500 hover:text-gray-300 rounded-xl text-sm transition"
+                  className="px-5 text-gray-500 hover:text-gray-300 rounded-xl text-sm transition"
                   style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
                   ביטול
                 </button>
@@ -199,12 +199,12 @@ export default function MatchCard({ match, bet, onBet }: Props) {
 function ModeBtn({ active, onClick, label, sub, color }: { active: boolean; onClick: () => void; label: string; sub: string; color: string }) {
   return (
     <button onClick={onClick}
-      className="rounded-xl py-2.5 px-2 text-center transition"
+      className="rounded-xl py-3.5 px-2 text-center transition"
       style={active
-        ? { background: `${color}33`, border: `1px solid ${color}88`, color: '#fff' }
-        : { background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', color: '#6b7280' }}>
-      <div className="text-xs font-semibold">{label}</div>
-      <div className="text-xs mt-0.5 opacity-70">{sub}</div>
+        ? { background: `${color}40`, border: `1px solid ${color}99`, color: '#fff' }
+        : { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', color: '#6b7280' }}>
+      <div className="text-sm font-bold">{label}</div>
+      <div className="text-xs mt-0.5 opacity-60">{sub}</div>
     </button>
   )
 }

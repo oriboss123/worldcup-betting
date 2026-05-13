@@ -12,15 +12,22 @@ import WelcomeModal from '@/components/WelcomeModal'
 import { Search } from 'lucide-react'
 
 function CountdownBanner({ days, hours, mins, secs, started }: { days: number; hours: number; mins: number; secs: number; started: boolean }) {
-  if (started) return null
+  if (started) return (
+    <div className="rounded-2xl px-5 py-4 mb-6 text-center font-bold text-green-300"
+      style={{ background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.25)' }}>
+      🏆 המונדיאל החל! הימר לפני כל משחק
+    </div>
+  )
   return (
-    <div className="flex items-center justify-center gap-2 mb-5 text-sm">
-      <span className="text-green-400">⏱</span>
-      <span className="text-gray-400">
-        <span className="text-white font-bold tabular-nums">{days}</span> ימים{' '}
-        <span className="text-white font-bold tabular-nums">{String(hours).padStart(2,'0')}:{String(mins).padStart(2,'0')}:{String(secs).padStart(2,'0')}</span>
-      </span>
-      <span className="text-green-400/50 text-xs">לפתיחת המונדיאל</span>
+    <div className="rounded-2xl px-5 py-4 mb-6 flex items-center justify-center gap-4"
+      style={{ background: 'linear-gradient(135deg, rgba(34,197,94,0.12), rgba(16,185,129,0.06))', border: '1px solid rgba(34,197,94,0.2)' }}>
+      <span className="text-2xl">⏱️</span>
+      <div className="text-center">
+        <p className="text-xs text-green-400/70 mb-1">מונדיאל 2026 פותח בעוד</p>
+        <p className="text-white font-black text-xl tabular-nums">
+          {days} ימים · {String(hours).padStart(2,'0')}:{String(mins).padStart(2,'0')}:{String(secs).padStart(2,'0')}
+        </p>
+      </div>
     </div>
   )
 }
