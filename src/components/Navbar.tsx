@@ -2,14 +2,21 @@
 
 import Link from 'next/link'
 import { useUser } from '@/contexts/UserContext'
+import { useNav } from '@/contexts/NavContext'
 import { useState } from 'react'
 import { Trophy, Users, Calendar, BarChart3, LogOut, Menu, X, User } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 
 export default function Navbar() {
   const { user, logout } = useUser()
+  const { setMobileMenuOpen } = useNav()
   const [open, setOpen] = useState(false)
   const pathname = usePathname()
+
+  const toggleMenu = (val: boolean) => {
+    setOpen(val)
+    setMobileMenuOpen(val)
+  }
   const displayName = user?.nickname || user?.name
 
   const links = [
@@ -78,7 +85,7 @@ export default function Navbar() {
               </button>
             </div>
 
-            <button className="md:hidden text-gray-400 hover:text-white transition" onClick={() => setOpen(!open)}>
+            <button className="md:hidden text-gray-400 hover:text-white transition" onClick={() => toggleMenu(!open)}>
               {open ? <X size={22} /> : <Menu size={22} />}
             </button>
           </>
@@ -98,16 +105,16 @@ export default function Navbar() {
         <div className="md:hidden px-4 py-3 flex flex-col gap-1"
           style={{ background: 'rgba(4,4,12,0.98)', borderBottom: '1px solid rgba(34,197,94,0.1)' }}>
           {links.map(l => (
-            <Link key={l.href} href={l.href} onClick={() => setOpen(false)}
+            <Link key={l.href} href={l.href} onClick={() => toggleMenu(false)}
               className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-gray-300 hover:text-white hover:bg-white/5 text-sm transition">
               {l.icon}{l.label}
             </Link>
           ))}
-          <Link href="/profile" onClick={() => setOpen(false)}
+          <Link href="/profile" onClick={() => toggleMenu(false)}
             className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-gray-300 hover:text-white hover:bg-white/5 text-sm transition">
             <User size={15} />הפרופיל שלי
           </Link>
-          <button onClick={() => { logout(); setOpen(false) }}
+          <button onClick={() => { logout(); toggleMenu(false) }}
             className="flex items-center gap-2 px-3 py-2 text-red-400 text-sm text-right">
             <LogOut size={14} />התנתק
           </button>

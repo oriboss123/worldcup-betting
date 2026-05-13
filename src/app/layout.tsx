@@ -1,8 +1,10 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { UserProvider } from '@/contexts/UserContext'
+import { NavProvider } from '@/contexts/NavContext'
 import Navbar from '@/components/Navbar'
 import FlagBackground from '@/components/FlagBackground'
+import MainWrapper from '@/components/MainWrapper'
 
 export const metadata: Metadata = {
   title: 'מונדיאל 2026 — הימורים עם חברים',
@@ -14,12 +16,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="he" dir="rtl">
       <body>
         <FlagBackground />
-        <UserProvider>
-          <Navbar />
-          <main className="min-h-screen pt-16" style={{ position: 'relative', zIndex: 1 }}>
-            {children}
-          </main>
-        </UserProvider>
+        <NavProvider>
+          <UserProvider>
+            <Navbar />
+            <MainWrapper>{children}</MainWrapper>
+          </UserProvider>
+        </NavProvider>
       </body>
     </html>
   )

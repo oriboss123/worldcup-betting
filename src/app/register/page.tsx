@@ -102,7 +102,7 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-lg">
         {/* Header */}
         <div className="text-center mb-8">
           <div className="text-5xl mb-3">⚽</div>
@@ -110,7 +110,7 @@ export default function RegisterPage() {
           <p className="text-gray-500 text-sm mt-1">הימורים עם חברים</p>
         </div>
 
-        <div className="bg-[#0f0f1e] border border-[#1a1a2e] rounded-2xl p-6 shadow-xl shadow-black/40">
+        <div className="bg-[#0f0f1e] border border-[#1a1a2e] rounded-2xl p-8 shadow-xl shadow-black/40">
           {/* Tabs */}
           <div className="flex rounded-xl bg-[#070712] p-1 mb-6">
             <button
@@ -136,7 +136,7 @@ export default function RegisterPage() {
                     value={name}
                     onChange={e => setName(e.target.value)}
                     placeholder="ישראל ישראלי"
-                    className="w-full bg-transparent text-white placeholder-gray-600 outline-none text-sm"
+                    className="w-full bg-transparent text-white placeholder-gray-600 outline-none text-base"
                     required
                   />
                 </Field>
@@ -146,7 +146,7 @@ export default function RegisterPage() {
                     value={nickname}
                     onChange={e => setNickname(e.target.value)}
                     placeholder="הכינוי שלך בדירוג"
-                    className="w-full bg-transparent text-white placeholder-gray-600 outline-none text-sm"
+                    className="w-full bg-transparent text-white placeholder-gray-600 outline-none text-base"
                   />
                 </Field>
               </>
@@ -158,7 +158,7 @@ export default function RegisterPage() {
                 value={phone}
                 onChange={e => setPhone(e.target.value)}
                 placeholder="050-0000000"
-                className="w-full bg-transparent text-white placeholder-gray-600 outline-none text-sm"
+                className="w-full bg-transparent text-white placeholder-gray-600 outline-none text-base"
                 required
               />
             </Field>
@@ -205,9 +205,9 @@ export default function RegisterPage() {
 function Field({ icon, label, children }: { icon: React.ReactNode; label: string; children: React.ReactNode }) {
   return (
     <div>
-      <label className="text-xs text-gray-500 block mb-1.5">{label}</label>
-      <div className="flex items-center gap-3 bg-[#070712] border border-[#2a2a3e] rounded-xl px-4 py-3 focus-within:border-green-500 transition">
-        <span className="text-gray-600 flex-shrink-0">{icon}</span>
+      <label className="text-sm text-gray-400 block mb-2 font-medium">{label}</label>
+      <div className="flex items-center gap-3 bg-[#070712] border border-[#2a2a3e] rounded-xl px-5 py-4 focus-within:border-green-500 transition">
+        <span className="text-gray-500 flex-shrink-0">{icon}</span>
         {children}
       </div>
     </div>
