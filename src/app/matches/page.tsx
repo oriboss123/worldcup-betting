@@ -8,7 +8,8 @@ import { createClient } from '@/lib/supabase/client'
 import { Match, Bet } from '@/lib/types'
 import { STAGE_LABELS } from '@/lib/wc2026-matches'
 import MatchCard from '@/components/MatchCard'
-import { Search } from 'lucide-react'
+import WelcomeModal from '@/components/WelcomeModal'
+import { Search, Info } from 'lucide-react'
 
 const STAGES = ['group', 'round_of_32', 'round_of_16', 'quarter', 'semi', 'third_place', 'final']
 const STATUS_FILTER = ['הכל', 'עתיד', 'הסתיים']
@@ -93,6 +94,16 @@ export default function MatchesPage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-6">
+      <WelcomeModal />
+
+      {/* Info banner */}
+      <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl px-4 py-3 mb-5 flex items-start gap-3 text-sm text-blue-300">
+        <Info size={16} className="mt-0.5 flex-shrink-0" />
+        <span>
+          הימר לפני כל משחק — <strong>מנצח נכון = +3</strong>, <strong>תוצאה מדויקת = +6</strong>. ניתן להמר עד 30 דקות לפני הקיקאוף.
+        </span>
+      </div>
+
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-white">משחקים</h1>
         <div className="relative">
