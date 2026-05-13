@@ -12,45 +12,15 @@ import WelcomeModal from '@/components/WelcomeModal'
 import { Search } from 'lucide-react'
 
 function CountdownBanner({ days, hours, mins, secs, started }: { days: number; hours: number; mins: number; secs: number; started: boolean }) {
-  const [open, setOpen] = useState(() => {
-    if (typeof window === 'undefined') return true
-    return localStorage.getItem('wc_countdown_open') !== 'false'
-  })
-
-  const toggle = () => {
-    const next = !open
-    setOpen(next)
-    localStorage.setItem('wc_countdown_open', String(next))
-  }
-
-  if (started) {
-    return (
-      <div className="bg-green-500/10 border border-green-500/30 rounded-2xl px-5 py-3 mb-6 text-center text-green-300 font-semibold">
-        🏆 המונדיאל החל! הימר לפני כל משחק
-      </div>
-    )
-  }
-
+  if (started) return null
   return (
-    <div className="rounded-2xl mb-6 overflow-hidden border border-green-500/25"
-      style={{ background: 'linear-gradient(135deg, #041a0c 0%, #071512 100%)' }}>
-      <button
-        onClick={toggle}
-        className="w-full px-5 py-3 flex items-center justify-between text-green-400/80 hover:text-green-400 transition"
-      >
-        <span className="text-xs font-semibold tracking-wider">⚽ מונדיאל 2026 — פותח בעוד</span>
-        <span className="text-gray-600 text-xs">{open ? '▲ הסתר' : '▼ הצג'}</span>
-      </button>
-      {open && (
-        <div className="px-5 pb-4 grid grid-cols-4 gap-2">
-          {[{ v: days, l: 'ימים' }, { v: hours, l: 'שעות' }, { v: mins, l: 'דקות' }, { v: secs, l: 'שניות' }].map(({ v, l }) => (
-            <div key={l} className="rounded-xl py-3 text-center" style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(34,197,94,0.1)' }}>
-              <div className="text-2xl font-black text-white tabular-nums">{String(v).padStart(2, '0')}</div>
-              <div className="text-xs text-green-400/60 mt-0.5">{l}</div>
-            </div>
-          ))}
-        </div>
-      )}
+    <div className="flex items-center justify-center gap-2 mb-5 text-sm">
+      <span className="text-green-400">⏱</span>
+      <span className="text-gray-400">
+        <span className="text-white font-bold tabular-nums">{days}</span> ימים{' '}
+        <span className="text-white font-bold tabular-nums">{String(hours).padStart(2,'0')}:{String(mins).padStart(2,'0')}:{String(secs).padStart(2,'0')}</span>
+      </span>
+      <span className="text-green-400/50 text-xs">לפתיחת המונדיאל</span>
     </div>
   )
 }

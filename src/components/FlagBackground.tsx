@@ -4,47 +4,75 @@ const FLAGS = [
   '🇧🇷','🇦🇷','🇫🇷','🇩🇪','🇪🇸','🇵🇹','🇳🇱','🇧🇪','🇺🇸','🇲🇽',
   '🇯🇵','🇰🇷','🇲🇦','🇸🇳','🇨🇦','🇦🇺','🇨🇭','🇵🇱','🇭🇷','🇷🇸',
   '🇺🇾','🇨🇴','🇩🇰','🇸🇪','🇬🇷','🇹🇷','🇨🇿','🇦🇹','🇵🇪','🇬🇭',
-  '🇳🇬','🇮🇷','🇸🇦','🇶🇦','🇷🇴','🇨🇱','🇪🇨','🇮🇹','🇨🇲','🇿🇦',
+  '🇳🇬','🇮🇷','🇸🇦','🇷🇴','🇨🇱','🇮🇹','🇨🇲','🇿🇦','🇪🇨','🇶🇦',
 ]
 
-const COUNT = 160
-const tiles = Array.from({ length: COUNT }, (_, i) => FLAGS[i % FLAGS.length])
+const COLS = 10
+const ROWS = 9
+const tiles = Array.from({ length: COLS * ROWS }, (_, i) => FLAGS[i % FLAGS.length])
 
 export default function FlagBackground() {
   return (
     <div
-      className="fixed inset-0 pointer-events-none select-none overflow-hidden"
       aria-hidden="true"
-      style={{ zIndex: 0 }}
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 0,
+        overflow: 'hidden',
+        pointerEvents: 'none',
+        userSelect: 'none',
+      }}
     >
-      {/* Flag grid */}
+      {/* Flag grid — clearly visible */}
       <div
-        className="flex flex-wrap gap-5 p-5 w-full"
-        style={{ opacity: 0.07, fontSize: '2rem', lineHeight: 1, filter: 'blur(0.3px)' }}
+        style={{
+          display: 'grid',
+          gridTemplateColumns: `repeat(${COLS}, 1fr)`,
+          gridTemplateRows: `repeat(${ROWS}, 1fr)`,
+          height: '100%',
+          width: '100%',
+          padding: '8px',
+          gap: '4px',
+          opacity: 0.32,
+          fontSize: '2.6rem',
+          lineHeight: 1,
+        }}
       >
         {tiles.map((f, i) => (
-          <span key={i}>{f}</span>
+          <span
+            key={i}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transform: i % 3 === 1 ? 'rotate(8deg)' : i % 3 === 2 ? 'rotate(-6deg)' : 'none',
+            }}
+          >
+            {f}
+          </span>
         ))}
       </div>
 
-      {/* Vignette overlay — keeps center dark and readable */}
+      {/* Strong center vignette — content area stays dark and readable */}
       <div
-        className="absolute inset-0"
         style={{
-          background: `
-            radial-gradient(ellipse 70% 70% at 50% 50%, rgba(4,4,12,0.82) 0%, rgba(4,4,12,0.4) 70%, transparent 100%),
-            linear-gradient(to bottom, rgba(4,4,12,0.6) 0%, transparent 25%, transparent 75%, rgba(4,4,12,0.6) 100%)
-          `,
+          position: 'absolute',
+          inset: 0,
+          background: [
+            'radial-gradient(ellipse 55% 65% at 50% 45%, rgba(4,4,12,0.92) 0%, rgba(4,4,12,0.75) 55%, rgba(4,4,12,0.1) 100%)',
+            'linear-gradient(to bottom, rgba(4,4,12,0.7) 0%, transparent 15%, transparent 85%, rgba(4,4,12,0.7) 100%)',
+          ].join(', '),
         }}
       />
 
-      {/* Green spotlight from top */}
+      {/* Green top glow */}
       <div
-        className="absolute"
         style={{
-          top: -100, left: '50%', transform: 'translateX(-50%)',
-          width: 700, height: 350,
-          background: 'radial-gradient(ellipse, rgba(34,197,94,0.18) 0%, transparent 70%)',
+          position: 'absolute',
+          top: -80, left: '50%', transform: 'translateX(-50%)',
+          width: '600px', height: '300px',
+          background: 'radial-gradient(ellipse, rgba(34,197,94,0.2) 0%, transparent 70%)',
         }}
       />
     </div>

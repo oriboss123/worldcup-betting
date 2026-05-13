@@ -1,17 +1,9 @@
 @import "tailwindcss";
 
-:root {
-  --bg: #04040c;
-  --card: #0a0a1a;
-  --card-border: #1a1a30;
-  --green: #22c55e;
-  --gold: #f59e0b;
-}
-
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  background-color: var(--bg);
+  background-color: #04040c;
   color: #f0f0f8;
   font-family: 'Segoe UI', 'Arial', sans-serif;
   direction: rtl;
@@ -19,36 +11,6 @@ body {
   overflow-x: hidden;
 }
 
-/* Stadium atmosphere background */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background:
-    radial-gradient(ellipse 120% 40% at 50% 0%, rgba(34,197,94,0.22) 0%, transparent 55%),
-    radial-gradient(ellipse 60% 30% at 15% 80%, rgba(16,185,129,0.08) 0%, transparent 50%),
-    radial-gradient(ellipse 60% 30% at 85% 80%, rgba(59,130,246,0.06) 0%, transparent 50%),
-    repeating-linear-gradient(
-      0deg,
-      transparent 0px,
-      transparent 79px,
-      rgba(34,197,94,0.025) 79px,
-      rgba(34,197,94,0.025) 80px
-    ),
-    repeating-linear-gradient(
-      90deg,
-      transparent 0px,
-      transparent 79px,
-      rgba(34,197,94,0.025) 79px,
-      rgba(34,197,94,0.025) 80px
-    );
-  background-attachment: fixed;
-  pointer-events: none;
-  z-index: 0;
-}
-
-body > * { position: relative; z-index: 1; }
-
 ::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-track { background: #04040c; }
 ::-webkit-scrollbar-thumb { background: #2a2a50; border-radius: 3px; }
