@@ -115,13 +115,13 @@ export default function RegisterPage() {
           <div className="flex rounded-xl bg-[#070712] p-1 mb-6">
             <button
               onClick={() => { setMode('register'); setError('') }}
-              className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition ${mode === 'register' ? 'bg-gradient-to-l from-green-500 to-emerald-400 text-white shadow' : 'text-gray-500 hover:text-gray-300'}`}
+              className={`flex-1 py-3 rounded-lg text-base font-bold transition ${mode === 'register' ? 'bg-gradient-to-l from-green-500 to-emerald-400 text-white shadow' : 'text-gray-500 hover:text-gray-300'}`}
             >
               הרשמה
             </button>
             <button
               onClick={() => { setMode('login'); setError('') }}
-              className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition ${mode === 'login' ? 'bg-gradient-to-l from-green-500 to-emerald-400 text-white shadow' : 'text-gray-500 hover:text-gray-300'}`}
+              className={`flex-1 py-3 rounded-lg text-base font-bold transition ${mode === 'login' ? 'bg-gradient-to-l from-green-500 to-emerald-400 text-white shadow' : 'text-gray-500 hover:text-gray-300'}`}
             >
               כניסה
             </button>
@@ -185,7 +185,7 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-l from-green-500 to-emerald-400 hover:from-green-600 hover:to-emerald-500 disabled:opacity-50 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-green-500/20"
+              className="w-full bg-gradient-to-l from-green-500 to-emerald-400 hover:from-green-600 hover:to-emerald-500 disabled:opacity-50 text-white font-bold py-4 text-lg rounded-xl transition shadow-lg shadow-green-500/20"
             >
               {loading ? '...' : mode === 'register' ? 'הירשם עכשיו 🚀' : 'כנס לחשבון'}
             </button>

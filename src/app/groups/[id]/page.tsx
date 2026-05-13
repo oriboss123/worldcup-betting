@@ -178,15 +178,15 @@ export default function GroupPage() {
 
       {!isMember ? (
         <button onClick={handleJoin}
-          className="w-full text-white font-bold py-3 rounded-2xl transition"
+          className="w-full text-white font-bold py-4 text-lg rounded-2xl transition"
           style={{ background: 'linear-gradient(135deg, #15803d, #22c55e)', boxShadow: '0 4px 20px rgba(34,197,94,0.25)' }}>
           הצטרף לקבוצה
         </button>
       ) : group.created_by !== user.id && (
         <button onClick={handleLeave}
-          className="w-full flex items-center justify-center gap-2 text-red-400/70 hover:text-red-400 py-2.5 rounded-2xl transition text-sm"
+          className="w-full flex items-center justify-center gap-2 text-red-400/70 hover:text-red-400 py-4 rounded-2xl transition font-medium"
           style={{ border: '1px solid rgba(239,68,68,0.15)' }}>
-          <LogOut size={14} />
+          <LogOut size={16} />
           עזוב קבוצה
         </button>
       )}

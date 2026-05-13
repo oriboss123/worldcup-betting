@@ -124,10 +124,10 @@ export default function ProfilePage() {
               />
             </div>
             <div className="flex gap-2">
-              <button onClick={handleSave} disabled={saving} className="bg-green-500 hover:bg-green-600 text-white text-sm px-4 py-2 rounded-lg transition">
+              <button onClick={handleSave} disabled={saving} className="bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded-xl transition">
                 {saving ? 'שומר...' : 'שמור'}
               </button>
-              <button onClick={() => setEditing(false)} className="text-gray-400 hover:text-white text-sm px-4 py-2 rounded-lg transition">
+              <button onClick={() => setEditing(false)} className="text-gray-400 hover:text-white px-6 py-3 rounded-xl transition border border-[#1a1a30]">
                 ביטול
               </button>
             </div>
@@ -223,7 +223,7 @@ export default function ProfilePage() {
 
       <button
         onClick={() => { logout(); router.push('/') }}
-        className="w-full text-red-400 hover:text-red-300 border border-red-400/20 hover:border-red-400/40 py-2.5 rounded-xl transition text-sm"
+        className="w-full text-red-400 hover:text-red-300 border border-red-400/20 hover:border-red-400/40 py-4 rounded-xl transition font-semibold text-base"
       >
         התנתק
       </button>

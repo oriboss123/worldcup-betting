@@ -11,6 +11,20 @@ body {
   overflow-x: hidden;
 }
 
+/* All interactive buttons: comfortable touch targets */
+button, a[role="button"] {
+  cursor: pointer;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Tabs and small contextual buttons are allowed to be smaller */
+.btn-sm {
+  min-height: 32px !important;
+}
+
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: #04040c; }
 ::-webkit-scrollbar-thumb { background: #2a2a50; border-radius: 3px; }

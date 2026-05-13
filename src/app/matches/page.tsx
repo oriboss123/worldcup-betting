@@ -170,12 +170,12 @@ export default function MatchesPage() {
       </div>
 
       {/* Stage tabs */}
-      <div className="flex gap-1.5 overflow-x-auto pb-2 mb-4">
+      <div className="flex gap-2 overflow-x-auto pb-2 mb-4">
         {STAGES.map(s => (
           <button
             key={s}
             onClick={() => setStage(s)}
-            className={`whitespace-nowrap px-3 py-1.5 rounded-lg text-sm transition font-medium ${
+            className={`btn-sm whitespace-nowrap px-4 py-2 rounded-xl text-sm transition font-semibold flex-shrink-0 ${
               stage === s
                 ? 'bg-gradient-to-l from-green-500 to-emerald-400 text-white shadow shadow-green-500/25'
                 : 'bg-[#0d0d1f] border border-[#1e1e3a] text-gray-400 hover:text-white hover:border-[#2e2e5a]'
@@ -192,8 +192,8 @@ export default function MatchesPage() {
           <button
             key={f}
             onClick={() => setStatusFilter(f)}
-            className={`px-3 py-1 rounded-full text-xs transition ${
-              statusFilter === f ? 'bg-[#1e1e3a] text-white border border-[#3e3e6a]' : 'text-gray-500 hover:text-gray-300'
+            className={`btn-sm px-4 py-2 rounded-xl text-sm font-medium transition ${
+              statusFilter === f ? 'bg-[#1e1e3a] text-white border border-[#3e3e6a]' : 'text-gray-500 hover:text-gray-300 border border-transparent'
             }`}
           >
             {f}
