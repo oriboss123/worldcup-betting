@@ -11,6 +11,50 @@ import MatchCard from '@/components/MatchCard'
 import WelcomeModal from '@/components/WelcomeModal'
 import { Search } from 'lucide-react'
 
+function CountdownBanner({ days, hours, mins, secs, started }: { days: number; hours: number; mins: number; secs: number; started: boolean }) {
+  const [open, setOpen] = useState(() => {
+    if (typeof window === 'undefined') return true
+    return localStorage.getItem('wc_countdown_open') !== 'false'
+  })
+
+  const toggle = () => {
+    const next = !open
+    setOpen(next)
+    localStorage.setItem('wc_countdown_open', String(next))
+  }
+
+  if (started) {
+    return (
+      <div className="bg-green-500/10 border border-green-500/30 rounded-2xl px-5 py-3 mb-6 text-center text-green-300 font-semibold">
+        🏆 המונדיאל החל! הימר לפני כל משחק
+      </div>
+    )
+  }
+
+  return (
+    <div className="rounded-2xl mb-6 overflow-hidden border border-green-500/25"
+      style={{ background: 'linear-gradient(135deg, #041a0c 0%, #071512 100%)' }}>
+      <button
+        onClick={toggle}
+        className="w-full px-5 py-3 flex items-center justify-between text-green-400/80 hover:text-green-400 transition"
+      >
+        <span className="text-xs font-semibold tracking-wider">⚽ מונדיאל 2026 — פותח בעוד</span>
+        <span className="text-gray-600 text-xs">{open ? '▲ הסתר' : '▼ הצג'}</span>
+      </button>
+      {open && (
+        <div className="px-5 pb-4 grid grid-cols-4 gap-2">
+          {[{ v: days, l: 'ימים' }, { v: hours, l: 'שעות' }, { v: mins, l: 'דקות' }, { v: secs, l: 'שניות' }].map(({ v, l }) => (
+            <div key={l} className="rounded-xl py-3 text-center" style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(34,197,94,0.1)' }}>
+              <div className="text-2xl font-black text-white tabular-nums">{String(v).padStart(2, '0')}</div>
+              <div className="text-xs text-green-400/60 mt-0.5">{l}</div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 function ScoringGuide() {
   const [open, setOpen] = useState(false)
   return (
@@ -127,27 +171,8 @@ export default function MatchesPage() {
     <div className="max-w-4xl mx-auto px-4 py-6">
       <WelcomeModal />
 
-      {/* Countdown / Tournament started banner */}
-      {!started ? (
-        <div className="rounded-2xl mb-6 overflow-hidden border border-green-500/30"
-          style={{ background: 'linear-gradient(135deg, #052010 0%, #0a1a1a 100%)' }}>
-          <div className="px-5 py-4">
-            <p className="text-green-400 text-xs font-semibold mb-3 text-center tracking-wider">⚽ מונדיאל 2026 פותח בעוד</p>
-            <div className="grid grid-cols-4 gap-2">
-              {[{ v: days, l: 'ימים' }, { v: hours, l: 'שעות' }, { v: mins, l: 'דקות' }, { v: secs, l: 'שניות' }].map(({ v, l }) => (
-                <div key={l} className="bg-black/40 rounded-xl py-3 text-center border border-green-500/10">
-                  <div className="text-2xl font-black text-white tabular-nums">{String(v).padStart(2, '0')}</div>
-                  <div className="text-xs text-green-400/70 mt-0.5">{l}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div className="bg-green-500/10 border border-green-500/30 rounded-2xl px-5 py-3 mb-6 text-center text-green-300 font-semibold">
-          🏆 המונדיאל החל! הימר לפני כל משחק
-        </div>
-      )}
+      {/* Countdown — collapsible */}
+      <CountdownBanner days={days} hours={hours} mins={mins} secs={secs} started={started} />
 
       {/* Scoring guide — collapsible */}
       <ScoringGuide />

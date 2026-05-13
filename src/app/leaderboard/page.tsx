@@ -6,13 +6,12 @@ import { useUser } from '@/contexts/UserContext'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { User } from '@/lib/types'
-import { Crown, Medal, Trophy, Globe } from 'lucide-react'
+import { Crown, Medal, Trophy } from 'lucide-react'
 
 export default function LeaderboardPage() {
   const { user, loading } = useUser()
   const router = useRouter()
   const supabase = createClient()
-
   const [users, setUsers] = useState<User[]>([])
   const [fetching, setFetching] = useState(true)
 
@@ -22,12 +21,7 @@ export default function LeaderboardPage() {
 
   useEffect(() => {
     const fetch = async () => {
-      const { data } = await supabase
-        .from('users')
-        .select('*')
-        .order('total_points', { ascending: false })
-        .limit(100)
-
+      const { data } = await supabase.from('users').select('*').order('total_points', { ascending: false }).limit(100)
       if (data) setUsers(data)
       setFetching(false)
     }
@@ -41,58 +35,80 @@ export default function LeaderboardPage() {
   return (
     <div className="max-w-2xl mx-auto px-4 py-6">
       <div className="flex items-center gap-2 mb-6">
-        <Globe size={22} className="text-green-400" />
+        <Trophy size={22} className="text-yellow-400" />
         <h1 className="text-2xl font-bold text-white">דירוג גלובלי</h1>
       </div>
 
-      {/* My rank banner */}
+      {/* My rank */}
       {myRank > 0 && (
-        <div className="bg-gradient-to-l from-green-500/10 to-blue-500/10 border border-green-500/20 rounded-xl p-4 mb-6 flex items-center justify-between">
+        <div className="rounded-2xl p-5 mb-6 flex items-center justify-between"
+          style={{ background: 'linear-gradient(135deg, rgba(34,197,94,0.12), rgba(59,130,246,0.08))', border: '1px solid rgba(34,197,94,0.25)' }}>
           <div>
-            <p className="text-sm text-gray-400">המיקום שלך</p>
-            <p className="text-2xl font-bold text-white">#{myRank}</p>
+            <p className="text-xs text-gray-400 mb-1">המיקום שלך</p>
+            <p className="text-3xl font-black text-white">#{myRank}</p>
           </div>
           <div className="text-right">
-            <p className="text-sm text-gray-400">נקודות</p>
-            <p className={`text-2xl font-bold ${user.total_points >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+            <p className="text-xs text-gray-400 mb-1">נקודות</p>
+            <p className={`text-3xl font-black ${user.total_points >= 0 ? 'text-green-400' : 'text-red-400'}`}>
               {user.total_points >= 0 ? '+' : ''}{user.total_points}
             </p>
           </div>
         </div>
       )}
 
-      {/* Leaderboard */}
-      <div className="bg-[#13131f] border border-[#1e1e2e] rounded-xl overflow-hidden">
-        <div className="px-4 py-3 border-b border-[#1e1e2e] flex items-center gap-2">
-          <Trophy size={16} className="text-yellow-400" />
-          <h2 className="font-semibold text-white">כל המשתתפים</h2>
-          <span className="text-xs text-gray-500 mr-auto">{users.length} משתתפים</span>
+      {/* Top 3 podium */}
+      {!fetching && users.length >= 3 && (
+        <div className="grid grid-cols-3 gap-3 mb-6">
+          {[users[1], users[0], users[2]].map((u, podiumIdx) => {
+            const rank = podiumIdx === 0 ? 2 : podiumIdx === 1 ? 1 : 3
+            const isMe = u?.id === user.id
+            const colors = { 1: 'from-yellow-500/20 to-yellow-500/5 border-yellow-500/30', 2: 'from-gray-400/15 to-gray-400/5 border-gray-400/20', 3: 'from-amber-600/15 to-amber-600/5 border-amber-600/20' }
+            const pts = { 1: 'text-yellow-400', 2: 'text-gray-300', 3: 'text-amber-500' }
+            return (
+              <div key={rank} className={`rounded-2xl p-3 text-center bg-gradient-to-b border ${colors[rank as 1|2|3]} ${rank === 1 ? 'mt-0' : 'mt-4'}`}>
+                <div className="text-2xl mb-1">{rank === 1 ? '🥇' : rank === 2 ? '🥈' : '🥉'}</div>
+                <div className={`text-xs font-bold truncate ${isMe ? 'text-green-400' : 'text-white'}`}>
+                  {u?.nickname || u?.name}
+                </div>
+                <div className={`text-lg font-black mt-1 ${pts[rank as 1|2|3]}`}>
+                  {(u?.total_points ?? 0) >= 0 ? '+' : ''}{u?.total_points ?? 0}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      )}
+
+      {/* Full list */}
+      <div className="rounded-2xl overflow-hidden" style={{ background: '#0a0a1a', border: '1px solid #1a1a30' }}>
+        <div className="px-4 py-3 border-b flex items-center gap-2" style={{ borderColor: '#1a1a30' }}>
+          <Trophy size={14} className="text-yellow-400" />
+          <span className="font-semibold text-white text-sm">כל המשתתפים</span>
+          <span className="text-xs text-gray-600 mr-auto">{users.length} משתתפים</span>
         </div>
 
         {fetching ? (
-          <div className="text-center text-gray-500 py-8">טוען...</div>
+          <div className="text-center text-gray-500 py-10 text-sm">טוען...</div>
         ) : (
-          <div className="divide-y divide-[#1e1e2e]">
+          <div className="divide-y" style={{ borderColor: '#1a1a30' }}>
             {users.map((u, i) => {
               const isMe = u.id === user.id
-              const displayName = u.nickname || u.name
               return (
-                <div key={u.id} className={`flex items-center px-4 py-3 ${isMe ? 'bg-green-500/5' : ''}`}>
-                  <div className="w-10 text-center">
-                    {i === 0 ? <Crown size={20} className="text-yellow-400 mx-auto" /> :
-                     i === 1 ? <Medal size={18} className="text-gray-300 mx-auto" /> :
-                     i === 2 ? <Medal size={18} className="text-amber-600 mx-auto" /> :
-                     <span className="text-gray-500 text-sm">#{i + 1}</span>}
+                <div key={u.id} className="flex items-center px-4 py-3 transition"
+                  style={isMe ? { background: 'rgba(34,197,94,0.05)' } : {}}>
+                  <div className="w-10 text-center flex-shrink-0">
+                    {i === 0 ? <Crown size={18} className="text-yellow-400 mx-auto" /> :
+                     i === 1 ? <Medal size={16} className="text-gray-300 mx-auto" /> :
+                     i === 2 ? <Medal size={16} className="text-amber-600 mx-auto" /> :
+                     <span className="text-gray-600 text-sm">#{i + 1}</span>}
                   </div>
-                  <div className="flex-1 mr-3">
-                    <p className={`font-medium text-sm ${isMe ? 'text-green-400' : 'text-white'}`}>
-                      {displayName} {isMe ? '(אתה)' : ''}
+                  <div className="flex-1 mx-3 min-w-0">
+                    <p className={`font-medium text-sm truncate ${isMe ? 'text-green-400' : 'text-white'}`}>
+                      {u.nickname || u.name} {isMe ? '👈' : ''}
                     </p>
-                    {u.nickname && (
-                      <p className="text-xs text-gray-500">{u.name}</p>
-                    )}
+                    {u.nickname && <p className="text-xs text-gray-600 truncate">{u.name}</p>}
                   </div>
-                  <div className={`font-bold text-lg ${u.total_points >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                  <div className={`font-black text-lg flex-shrink-0 ${u.total_points >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                     {u.total_points >= 0 ? '+' : ''}{u.total_points}
                   </div>
                 </div>
@@ -102,10 +118,7 @@ export default function LeaderboardPage() {
         )}
       </div>
 
-      <div className="mt-4 text-xs text-gray-600 text-center">
-        <p>מוצגים 100 המקומות הראשונים</p>
-        <p className="mt-1">נקודות: מנצח +3/-1 | תוצאה מדויקת +6/-3</p>
-      </div>
+      <p className="mt-4 text-xs text-gray-700 text-center">מנצח +3 / -1 | תוצאה מדויקת +6 / -3</p>
     </div>
   )
 }
